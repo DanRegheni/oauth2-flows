@@ -4,7 +4,7 @@
     participant AuthorizationServer
     participant API
 
-    UserAgent->>App: I'd like to use this great app
+    UserAgent->>App: Initiate login
     App->>UserAgent: Generates client_secret and hashed_secret
     App->>UserAgent: Redirect to AuthorizationServer with client_id & hashed_secret
     UserAgent->>AuthorizationServer: Request access with client_id & hashed_secret
