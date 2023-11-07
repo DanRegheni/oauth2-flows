@@ -1,0 +1,15 @@
+﻿sequenceDiagram
+    participant UserAgent as User Agent
+    participant App
+    participant AuthorizationServer
+    participant API
+
+    UserAgent->>App: I'd like to use this great app
+    App->>UserAgent: Generates client_secret and hashed_secret
+    App->>UserAgent: Redirect to AuthorizationServer with client_id & hashed_secret
+    UserAgent->>AuthorizationServer: Request access with client_id & hashed_secret
+    AuthorizationServer->>UserAgent: Returns authorization_code
+    UserAgent->>App: Provides authorization_code
+    App->>AuthorizationServer: Send authorization_code, client_id, and client_secret
+    AuthorizationServer->>App: Validate and return access_token
+    App->>API: Use access_token to make authorized requests

@@ -1,0 +1,21 @@
+﻿sequenceDiagram
+    participant User as User
+    participant ReactApp as React Frontend
+    participant AzureAD as Azure AD
+    participant BackendAPI as ASP.NET Core API
+
+    ReactApp->>ReactApp: Generate Code Verifier & Code Challenge
+    User->>ReactApp: Attempt to access protected resource
+    ReactApp->>AzureAD: Redirect to Azure AD with Code Challenge
+    AzureAD->>User: Prompt for credentials
+    User->>AzureAD: Provide credentials
+    AzureAD->>ReactApp: Return Authorization Code
+    ReactApp->>AzureAD: Request Access & ID token using Authorization Code + Code Verifier
+    AzureAD->>ReactApp: Return Access & ID Token after validating Code Verifier against previously sent Code Challenge
+    Note over ReactApp: Store tokens securely e.g. session storage or HTTP cookie
+    User->>ReactApp: Request action/resource from React Frontend
+    ReactApp->>BackendAPI: Pass Access token and request data
+    BackendAPI->>AzureAD: Verify Access token (optional step if token introspection is needed or if JWT isn't validated locally)
+    AzureAD->>BackendAPI: Token is valid
+    BackendAPI->>ReactApp: Return requested data/resource
+    ReactApp->>User: Display data/resource to User

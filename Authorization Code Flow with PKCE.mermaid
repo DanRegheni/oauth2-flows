@@ -1,0 +1,20 @@
+﻿sequenceDiagram
+    participant User as User (Browser)
+    participant ReactSPA as React SPA
+    participant AzureAD as Azure AD
+    participant API as ASP.NET Core API
+
+    User->>ReactSPA: Initiate login
+    ReactSPA->>ReactSPA: Generate code_verifier & code_challenge
+    ReactSPA->>AzureAD: Redirect to Azure AD with code_challenge
+    AzureAD->>User: Authenticate user
+    User->>AzureAD: Enter credentials
+    AzureAD->>ReactSPA: Redirect with authorization code
+    ReactSPA->>AzureAD: Send code & code_verifier to get tokens
+    AzureAD->>ReactSPA: Return ID token & access token
+    ReactSPA->>User: Establish user session using ID token
+    User->>ReactSPA: Request protected resource
+    ReactSPA->>API: Send request with access token
+    API->>AzureAD: Verify access token (optional, can be done locally)
+    AzureAD->>API: Token verification response
+    API->>ReactSPA: Send protected resource/data

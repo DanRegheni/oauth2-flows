@@ -1,0 +1,16 @@
+﻿sequenceDiagram
+    participant Server
+    participant Client
+    participant IdP as Identity Provider (Azure AD)
+
+    Server->>Server: Compute SHA-256 hash of (BASE64URL_ENCODED_HEADER + "." + BASE64URL_ENCODED_PAYLOAD)
+    Server->>Server: Sign hash using RSA with Private Key -> Signature
+    Server->>Client: Send JWT (Header.Payload.Signature) to Client
+    Client->>Client: Split JWT: Header, Payload, Signature
+    Client->>Client: Decode Header to get "alg" and "kid"
+    Client->>IdP: Fetch public key for "kid" from JWKS endpoint
+    IdP-->>Client: Return public key
+    Client->>Client: Compute SHA-256 hash of received (BASE64URL_ENCODED_HEADER + "." + BASE64URL_ENCODED_PAYLOAD)
+    Client->>Client: Use public key to decrypt JWT Signature -> Decrypted Hash
+    Client->>Client: Compare computed hash with Decrypted Hash
+    Client->>Client: If matching, JWT is validated

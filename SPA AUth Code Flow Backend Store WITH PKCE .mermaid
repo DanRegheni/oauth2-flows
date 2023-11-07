@@ -1,0 +1,34 @@
+﻿sequenceDiagram
+    participant User as User
+    participant ReactApp as React SPA
+    participant Backend as Backend Server
+    participant AuthServer as Authorization Server
+    participant ResourceServer as Resource Server
+
+    User->>ReactApp: Click Login
+    ReactApp->>Backend: Request for PKCE code_verifier & code_challenge
+    Backend->>ReactApp: Return code_challenge & save code_verifier in session
+    ReactApp->>AuthServer: Redirect to Auth Server with client ID, redirect URI & code_challenge
+    AuthServer->>User: Prompt for Credentials
+    User->>AuthServer: Enter Credentials
+    AuthServer->>ReactApp: Redirect with Authorization Code
+    ReactApp->>Backend: Send Authorization Code
+    Backend->>AuthServer: Exchange Authorization Code + code_verifier for Tokens
+    AuthServer->>Backend: Return Access Token, ID Token (& optionally Refresh Token)
+    Backend->>ReactApp: Send Session Cookie & User Info from ID Token
+    ReactApp->>User: Display Logged-in State & User Info
+
+    Note over User,ReactApp: User Interacts with the App
+
+    ReactApp->>Backend: Request to make an Authenticated API Call
+    Backend->>ResourceServer: Forward Request with Access Token
+    ResourceServer->>Backend: Return Requested Data (after token validation)
+    Backend->>ReactApp: Forward Data
+    ReactApp->>User: Display Data
+
+    Note over User,ReactApp: After Some Time...
+
+    User->>ReactApp: Click Logout
+    ReactApp->>Backend: Logout Request
+    Backend-->>ReactApp: Invalidate Session & Tokens
+    ReactApp->>User: Display Logged-out State
